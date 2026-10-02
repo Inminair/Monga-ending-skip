@@ -159,6 +159,11 @@ input:focus, textarea:focus, button:focus-visible {
   outline-offset: 2px;
 }
 
+textarea::placeholder { color: var(--ink-soft); font-family: Galmuri11, system-ui, sans-serif; }
+
+.add { display: block; width: 100%; margin-top: 8px; padding: 3px 8px; background: var(--mint); color: var(--text); }
+.add:hover { background: #d2f7c4; }
+
 .hint { margin: 5px 0 0; font: 10px/1.4 Galmuri9, system-ui, sans-serif; color: var(--ink-soft); }
 
 /* 찾기 */

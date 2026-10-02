@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="size" content="720x432">
+  <link rel="stylesheet" href="guide.css">
+  <style>
+    .page-head { display: flex; align-items: center; gap: 16px; height: 58px; padding: 0 20px; border-bottom: 1px solid var(--chrome-line); }
+    .page-head h1 { margin: 0; font-size: 20px; font-weight: 400; }
+    .page-head .menu { color: var(--chrome-sub); font-size: 18px; }
+    .search-box { flex: 1; max-width: 260px; height: 34px; margin: 0 auto; padding: 0 14px; border-radius: 17px; background: var(--chrome-bg); line-height: 34px; color: var(--chrome-sub); }
+    .dev { display: flex; align-items: center; gap: 10px; padding: 4px 6px; border-radius: 6px; color: var(--chrome-sub); }
+    .switch { position: relative; width: 34px; height: 14px; border-radius: 7px; background: #a8c7fa; }
+    .switch::after { content: ""; position: absolute; right: -2px; top: -3px; width: 20px; height: 20px; border-radius: 50%; background: var(--chrome-blue); box-shadow: 0 1px 3px rgba(0,0,0,.3); }
+
+    .dev-bar { display: flex; gap: 8px; padding: 10px 20px; border-bottom: 1px solid var(--chrome-line); }
+    .dev-bar span { padding: 6px 14px; border: 1px solid var(--chrome-line); border-radius: 16px; color: var(--chrome-blue); font-size: 12px; }
+
+    .cards { padding: 56px 20px 26px; background: #f8f9fa; border-radius: 0 0 10px 10px; }
+    .card { width: 360px; border-radius: 8px; background: #fff; box-shadow: 0 1px 3px rgba(60,64,67,.3); }
+    .card-top { display: flex; gap: 14px; padding: 16px; }
+    .card-top img { width: 48px; height: 48px; image-rendering: pixelated; }
+    .card-top b { font-weight: 400; font-size: 14px; }
+    .card-top small { margin-left: 6px; color: var(--chrome-sub); }
+    .card-top p { margin: 4px 0 0; color: var(--chrome-sub); font-size: 12px; }
+    .card-bottom { display: flex; align-items: center; gap: 8px; padding: 10px 16px; border-top: 1px solid var(--chrome-line); }
+    .card-bottom span { padding: 4px 12px; border: 1px solid var(--chrome-line); border-radius: 14px; color: var(--chrome-blue); font-size: 12px; }
+    .card-bottom .switch { margin-left: auto; }
+
+    .hl { outline: 3px solid var(--pink-deep); outline-offset: 2px; }
+  </style>
+</head>
+<body>
+  <div class="browser">
+    <div class="toolbar">
+      <span class="nav">←→↻</span>
+      <div class="omnibox"><b>chrome://extensions</b></div>
+      <span class="avatar"></span>
+    </div>
+
+    <div class="page-head">
+      <span class="menu">☰</span>
+      <h1>확장 프로그램</h1>
+      <div class="search-box">🔍 확장 프로그램 검색</div>
+      <div class="dev hl">개발자 모드 <span class="switch"></span></div>
+    </div>
+
+    <div class="dev-bar">
+      <span class="hl">압축해제된 확장 프로그램을 로드합니다</span>
+      <span>확장 프로그램 압축</span>
+      <span>업데이트</span>
+    </div>
+
+    <div class="cards">
+      <div class="card hl">
+        <div class="card-top">
+          <img src="../../icons/icon48.png" alt="">
+          <div>
+            <b>먼가... 엔딩 스킵</b><small>1.2.0</small>
+            <p>유튜브 재생목록에서 본편이 끝나면 엔딩송을 건너뛰고 바로 다음 화로…</p>
+          </div>
+        </div>
+        <div class="card-bottom"><span>세부정보</span><span>삭제</span><span class="switch"></span></div>
+      </div>
+    </div>
+
+    <div class="bubble" style="right: 22px; top: 108px;"><span class="badge">1</span>개발자 모드 켜기</div>
+    <div class="bubble" style="left: 30px; top: 164px;"><span class="badge">2</span>누르고 <u>Monga-ending-skip</u> 폴더 선택</div>
+    <div class="bubble" style="left: 404px; top: 268px;"><span class="badge">3</span>이렇게 나타나면 설치 끝!</div>
+  </div>
+</body>
+</html>

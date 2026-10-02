@@ -43,9 +43,10 @@
       </div>
 
       <div class="field">
-        <label class="label" for="playlists">▸ 재생목록 ID 또는 주소</label>
-        <textarea id="playlists" spellcheck="false"></textarea>
-        <p class="hint">여러 개는 줄바꿈으로 구분해요.<br>비우면 3분 이하 모든 영상에 적용돼요.</p>
+        <label class="label" for="playlists">▸ 건너뛸 재생목록</label>
+        <textarea id="playlists" spellcheck="false" placeholder="재생목록 주소나 ID"></textarea>
+        <button class="px-btn add" id="add-current" hidden>+ 지금 보는 재생목록 추가</button>
+        <p class="hint">여러 개는 줄바꿈으로 구분해요.<br>비어 있으면 아무 영상도 건너뛰지 않아요.</p>
       </div>
     </section>
 

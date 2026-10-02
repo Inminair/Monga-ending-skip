@@ -1,0 +1,157 @@
+@import url('../../fonts/galmuri.css');
+
+:root {
+  --ink: #4a5bc4;
+  --ink-soft: #8d9ae0;
+  --text: #34407f;
+  --paper: #ffffff;
+  --sky: #c7e4ff;
+  --pink: #ffa9d6;
+  --pink-deep: #ff6fb5;
+  --butter: #fff6c4;
+  --mint: #b9f0a6;
+  --lilac: #e5ddff;
+  --mist: #eef3ff;
+
+  /* 크롬 화면 흉내용 */
+  --chrome-bg: #f1f3f4;
+  --chrome-line: #dadce0;
+  --chrome-text: #202124;
+  --chrome-sub: #5f6368;
+  --chrome-blue: #1a73e8;
+}
+
+* { box-sizing: border-box; }
+
+html, body { margin: 0; }
+html { height: 100%; } /* 배경 그라데이션이 화면 전체를 한 번에 덮도록 */
+
+body {
+  min-height: 100%;
+  width: 720px;
+  padding: 24px;
+  font: 12px/1.5 Galmuri11, sans-serif;
+  color: var(--text);
+  background-color: #fbf2d6;
+  background-image:
+    linear-gradient(rgba(255, 255, 255, .6) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, .6) 1px, transparent 1px),
+    linear-gradient(160deg, #f3f7c6 0%, #ffe3f1 55%, #e6defd 100%);
+  background-size: 14px 14px, 14px 14px, 100% 100%;
+  -webkit-font-smoothing: none;
+  word-break: keep-all;
+}
+
+/* 픽셀 창 */
+.window {
+  background: var(--paper);
+  border: 2px solid var(--ink);
+  box-shadow: 4px 4px 0 var(--ink-soft);
+}
+.titlebar {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 6px 4px 10px;
+  background: var(--sky);
+  border-bottom: 2px solid var(--ink);
+  font-weight: 700;
+  color: var(--ink);
+}
+.titlebar .grow { flex: 1; }
+.titlebar i { width: 14px; height: 14px; border: 2px solid var(--ink); }
+.titlebar i:nth-of-type(1) { background: var(--butter); }
+.titlebar i:nth-of-type(2) { background: var(--lilac); }
+.titlebar i:nth-of-type(3) { background: var(--pink); }
+.window-body { padding: 16px; }
+
+/* 번호 배지와 설명 */
+.badge {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  background: var(--pink-deep);
+  color: #fff;
+  border: 2px solid var(--ink);
+  box-shadow: 2px 2px 0 var(--ink);
+  font: 700 12px/1 Galmuri11, sans-serif;
+}
+.pin { position: absolute; z-index: 5; }
+
+.bubble {
+  position: absolute;
+  z-index: 5;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 8px;
+  background: var(--butter);
+  border: 2px solid var(--ink);
+  box-shadow: 2px 2px 0 var(--ink);
+  white-space: nowrap;
+  font-weight: 700;
+}
+
+.legend { margin: 0; padding: 0; list-style: none; }
+.legend li { display: flex; gap: 10px; margin-bottom: 14px; }
+.legend b { display: block; margin-bottom: 2px; }
+.legend p { margin: 0; color: #6b78c9; font: 10px/1.5 Galmuri9, sans-serif; }
+
+.note {
+  margin: 16px 0 0;
+  padding: 6px 10px;
+  border: 2px dashed var(--ink-soft);
+  background: rgba(255, 255, 255, .7);
+  font: 10px/1.5 Galmuri9, sans-serif;
+}
+
+/* 크롬 화면 흉내 (단순화) */
+.browser {
+  position: relative;
+  overflow: visible;
+  background: #fff;
+  border: 1px solid var(--chrome-line);
+  border-radius: 10px;
+  box-shadow: 0 6px 20px rgba(60, 64, 67, .18);
+  font: 13px/1.4 'Malgun Gothic', 'Segoe UI', sans-serif;
+  color: var(--chrome-text);
+  -webkit-font-smoothing: auto;
+}
+.toolbar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  height: 44px;
+  padding: 0 12px;
+  background: var(--chrome-bg);
+  border-bottom: 1px solid var(--chrome-line);
+  border-radius: 10px 10px 0 0;
+}
+.toolbar .nav { color: var(--chrome-sub); letter-spacing: 8px; font-size: 14px; }
+.omnibox {
+  flex: 1;
+  height: 30px;
+  padding: 0 14px;
+  border-radius: 15px;
+  background: #fff;
+  line-height: 30px;
+  color: var(--chrome-sub);
+  white-space: nowrap;
+  overflow: hidden;
+}
+.omnibox b { color: var(--chrome-text); font-weight: 400; }
+.tool-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+}
+.tool-icon svg { width: 20px; height: 20px; fill: var(--chrome-sub); }
+.tool-icon img { width: 16px; height: 16px; image-rendering: pixelated; }
+.tool-icon.active { background: #dde3ea; }
+.avatar { width: 24px; height: 24px; border-radius: 50%; background: #c6dafc; }

@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="size" content="720x262">
+  <link rel="stylesheet" href="guide.css">
+  <style>
+    .flow { position: relative; display: flex; align-items: center; height: 116px; padding-top: 44px; }
+    .track { width: 440px; }
+    .bar { display: flex; height: 34px; border: 2px solid var(--ink); }
+    .main { flex: 60; display: flex; align-items: center; padding-left: 10px; background: var(--sky); font-weight: 700; }
+    .ending {
+      flex: 31; display: flex; align-items: center; justify-content: center;
+      border-left: 2px solid var(--ink);
+      background: repeating-linear-gradient(135deg, var(--pink) 0 6px, #ffd6ec 6px 12px);
+      font-weight: 700;
+    }
+    .times { position: relative; height: 18px; margin-top: 4px; font: 10px Galmuri9, sans-serif; color: var(--ink-soft); }
+    .times span { position: absolute; top: 0; }
+    .times .t60 { left: 290px; transform: translateX(-50%); color: var(--pink-deep); font-weight: 700; }
+    .times .end { right: 0; }
+
+    .next { width: 140px; margin-left: auto; border: 2px solid var(--ink); background: var(--paper); box-shadow: 3px 3px 0 var(--ink-soft); }
+    .next header { padding: 2px 8px; background: var(--mint); border-bottom: 2px solid var(--ink); font-weight: 700; }
+    .next p { margin: 0; padding: 6px 8px; font: 10px/1.5 Galmuri9, sans-serif; color: var(--ink-soft); }
+
+    .hop { position: absolute; left: 0; top: 0; overflow: visible; }
+    .hop-label { position: absolute; left: 398px; top: 0; padding: 1px 8px; background: var(--butter); border: 2px solid var(--ink); font-weight: 700; color: var(--pink-deep); }
+
+    .caption { margin: 14px 0 0; text-align: center; }
+    .caption b { color: var(--pink-deep); }
+  </style>
+</head>
+<body>
+  <div class="window">
+    <div class="titlebar"><span class="grow">♥ 이렇게 동작해요</span><i></i><i></i><i></i></div>
+    <div class="window-body">
+      <div class="flow">
+        <svg class="hop" width="636" height="80" aria-hidden="true">
+          <path d="M290 44 C 330 0, 470 -6, 520 38" fill="none" stroke="#ff6fb5" stroke-width="3" stroke-dasharray="7 5"/>
+          <path d="M512 30 L522 42 L527 27 Z" fill="#ff6fb5"/>
+        </svg>
+        <span class="hop-label">▶▶| 건너뛰기</span>
+
+        <div class="track">
+          <div class="bar">
+            <div class="main">▶ 본편</div>
+            <div class="ending">♪ 엔딩송</div>
+          </div>
+          <div class="times">
+            <span>0:00</span>
+            <span class="t60">1:00</span>
+            <span class="end">1:31</span>
+          </div>
+        </div>
+
+        <div class="next">
+          <header>▶ 다음 화</header>
+          <p>처음부터 바로 재생</p>
+        </div>
+      </div>
+
+      <p class="caption">본편이 끝나는 시점(기본 <b>60초</b>)에 영상 끝으로 넘겨서, 재생목록이 바로 <b>다음 화</b>를 틀어요.</p>
+    </div>
+  </div>
+</body>
+</html>

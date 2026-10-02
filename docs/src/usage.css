@@ -1,0 +1,23 @@
+/* usage-*.html 공용: 왼쪽은 설명, 오른쪽은 툴바 아이콘 아래로 열린 팝업 */
+
+.usage { display: flex; gap: 28px; }
+
+.usage .legend-col { flex: 1; padding-top: 6px; }
+.usage h1 { margin: 0 0 16px; font-size: 14px; color: var(--ink); }
+.usage h1::before { content: "▸ "; color: var(--pink-deep); }
+
+.usage .shot { width: 324px; }
+.usage .shot .toolbar { justify-content: flex-end; border-radius: 10px; border-bottom: 0; }
+.usage .shot .omnibox { font-size: 12px; }
+
+.usage iframe {
+  display: block;
+  width: 300px;
+  height: 400px;
+  margin: 8px 0 0 auto;
+  border: 0;
+  border-radius: 8px;
+  box-shadow: 0 6px 20px rgba(60, 64, 67, .28);
+}
+
+.usage .hl { outline: 3px solid var(--pink-deep); outline-offset: 1px; border-radius: 50%; }

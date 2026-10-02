@@ -1,7 +1,7 @@
 const DEFAULTS = {
   enabled: true,
   skipAt: 60,
-  playlists: 'PLsmaUhkCwW3q5q46uc9So2b4D-pZqVZOV',
+  playlists: '',
 };
 
 const CACHE_TTL = 12 * 60 * 60 * 1000; // 받아 둔 재생목록은 12시간 동안 다시 받지 않는다
@@ -59,8 +59,16 @@ async function save() {
   $('skipAt').value = skipAt;
   $('playlists').value = playlists.join('\n');
 
+  renderAddCurrent();
+
   await chrome.storage.sync.set({ enabled, skipAt, playlists: playlists.join('\n') });
   flashStatus('♥ 저장 완료!');
+}
+
+// 재생목록 영상을 보면서 열었고 아직 목록에 없을 때만 "지금 보는 재생목록 추가" 를 보여 준다.
+function renderAddCurrent() {
+  const current = ytTab?.list;
+  $('add-current').hidden = !current || splitIds($('playlists').value).includes(current);
 }
 
 function nudge(delta) {
@@ -74,6 +82,10 @@ $('minus').addEventListener('click', () => nudge(-1));
 $('plus').addEventListener('click', () => nudge(1));
 $('skipAt').addEventListener('change', save);
 $('playlists').addEventListener('change', save);
+$('add-current').addEventListener('click', () => {
+  $('playlists').value = [...splitIds($('playlists').value), ytTab.list].join('\n');
+  save();
+});
 
 // ── 찾기 ───────────────────────────────────────
 
@@ -210,8 +222,10 @@ $('refresh').addEventListener('click', () => { if (listId) refresh(true); });
   $('skipAt').value = settings.skipAt;
   $('playlists').value = splitIds(settings.playlists).join('\n');
 
-  // 지금 보고 있는 재생목록이 먼저, 없으면 설정에 적어 둔 첫 재생목록.
   ytTab = where;
+  renderAddCurrent();
+
+  // 지금 보고 있는 재생목록이 먼저, 없으면 설정에 적어 둔 첫 재생목록.
   listId = where?.list || splitIds(settings.playlists)[0] || null;
   if (!listId) {
     $('source').textContent = '♪ 재생목록 없음';

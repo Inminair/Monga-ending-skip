@@ -1,13 +1,13 @@
-// 재생 시간이 기준(기본 60초)을 넘으면 영상 끝으로 이동한다.
+// 설정한 재생목록에서 재생 시간이 기준(기본 60초)을 넘으면 영상 끝으로 이동한다.
 // 영상이 끝나면 유튜브 재생목록이 알아서 다음 화를 틀어 준다.
 
 const DEFAULTS = {
   enabled: true,
   skipAt: 60,
-  playlists: 'PLsmaUhkCwW3q5q46uc9So2b4D-pZqVZOV',
+  playlists: '',
 };
 
-// 이보다 긴 영상(재생목록 맨 앞의 1시간짜리 노래 등)은 건드리지 않는다.
+// 재생목록 안이라도 이보다 긴 영상(섞여 있는 긴 노래 영상 등)은 건드리지 않는다.
 const MAX_DURATION = 180;
 
 let settings = { ...DEFAULTS };
@@ -30,7 +30,7 @@ document.addEventListener('timeupdate', (e) => {
 
   const playlists = settings.playlists.split(/[\s,]+/).filter(Boolean);
   const listId = new URLSearchParams(location.search).get('list');
-  if (playlists.length && !playlists.includes(listId)) return;
+  if (!listId || !playlists.includes(listId)) return;
 
   const skipAt = Number(settings.skipAt);
   const duration = video.duration;
