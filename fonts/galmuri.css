@@ -1,0 +1,30 @@
+/**
+ * Galmuri 2.40.3 — 팝업에서 쓰는 글꼴만 골라 담았다.
+ * Copyright (c) 2019–2025 Lee Minseo (quiple@quiple.dev),
+ * with Reserved Font Name "Galmuri".
+ * SIL Open Font License 1.1 — LICENSE.txt 참고.
+ */
+@font-face {
+  font-family: Galmuri11;
+  font-weight: 400;
+  font-display: block;
+  src: url('Galmuri11.woff2') format('woff2');
+}
+@font-face {
+  font-family: Galmuri11;
+  font-weight: 700;
+  font-display: block;
+  src: url('Galmuri11-Bold.woff2') format('woff2');
+}
+@font-face {
+  font-family: Galmuri9;
+  font-weight: 400;
+  font-display: block;
+  src: url('Galmuri9.woff2') format('woff2');
+}
+@font-face {
+  font-family: GalmuriMono11;
+  font-weight: 400;
+  font-display: block;
+  src: url('GalmuriMono11.woff2') format('woff2');
+}
