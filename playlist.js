@@ -2,9 +2,8 @@
 // youtube.com 안에서 요청해야 유튜브가 자기 페이지의 요청처럼 받아 준다.
 
 chrome.runtime.onMessage.addListener((msg, _sender, sendResponse) => {
-  if (msg.type === 'where') {
-    const params = new URLSearchParams(location.search);
-    sendResponse({ list: params.get('list'), v: params.get('v') });
+  if (msg.type === 'ping') { // 팝업이 이 탭에서 확장 프로그램이 동작 중인지 확인한다
+    sendResponse({ ok: true });
     return;
   }
   if (msg.type === 'playlist') {

@@ -11,6 +11,28 @@ const $ = (id) => document.getElementById(id);
 
 const splitIds = (text) => text.split(/[\s,]+/).filter(Boolean);
 
+// 팝업을 연 탭: { tab, youtube, alive, list, v }
+// alive 는 이 탭에 지금 버전의 콘텐츠 스크립트가 살아 있는지. (확장 프로그램보다 먼저 열린 탭은 false)
+let tabInfo = null;
+
+async function inspectTab() {
+  const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+  const info = { tab, youtube: false, alive: false, list: null, v: null };
+  if (!tab?.url) return info;
+
+  const url = new URL(tab.url);
+  info.youtube = url.hostname === 'www.youtube.com';
+  if (!info.youtube) return info;
+
+  info.list = url.searchParams.get('list');
+  info.v = url.searchParams.get('v');
+  try {
+    await chrome.tabs.sendMessage(tab.id, { type: 'ping' });
+    info.alive = true;
+  } catch { /* 콘텐츠 스크립트가 없다 → 새로고침이 필요한 탭 */ }
+  return info;
+}
+
 // ── 탭 ─────────────────────────────────────────
 
 function showTab(name) {
@@ -24,6 +46,53 @@ function showTab(name) {
 $('tab-settings').addEventListener('click', () => showTab('settings'));
 $('tab-search').addEventListener('click', () => showTab('search'));
 $('close').addEventListener('click', () => window.close());
+
+// ── 상태 표시 ──────────────────────────────────
+
+const STATES = {
+  loading: { title: '확인 중...', desc: '' },
+  active: { title: '적용 중', desc: () => `이 재생목록에서 ${$('skipAt').value}초가 지나면 다음 화로 넘어가요.` },
+  'not-added': { title: '적용 안 됨', desc: '이 재생목록은 아직 추가하지 않았어요.', action: '+ 이 재생목록 추가' },
+  off: { title: '꺼져 있음', desc: '추가된 재생목록이에요. YES 를 누르면 다시 건너뛰어요.' },
+  stale: { title: '새로고침이 필요해요', desc: '확장 프로그램보다 먼저 열린 탭이라 아직 동작하지 않아요.', action: '↻ 탭 새로고침' },
+  'no-playlist': { title: '재생목록이 아니에요', desc: '재생목록으로 영상을 틀면 여기서 바로 추가할 수 있어요.' },
+  'not-youtube': { title: '유튜브가 아니에요', desc: '유튜브 재생목록 영상에서 열어 주세요.' },
+};
+
+function currentState() {
+  if (!tabInfo) return 'loading';
+  if (!tabInfo.youtube) return 'not-youtube';
+  if (!tabInfo.alive) return 'stale';
+  if (!tabInfo.list) return 'no-playlist';
+  if (!splitIds($('playlists').value).includes(tabInfo.list)) return 'not-added';
+  return enabled ? 'active' : 'off';
+}
+
+let idleStatus = '♡ 대기 중';
+
+function renderState() {
+  const state = currentState();
+  const view = STATES[state];
+  $('state').dataset.state = state;
+  $('state-title').textContent = view.title;
+  $('state-desc').textContent = typeof view.desc === 'function' ? view.desc() : view.desc;
+  $('state-action').hidden = !view.action;
+  $('state-action').textContent = view.action ?? '';
+
+  idleStatus = state === 'active' ? '♥ 적용 중' : '♡ 대기 중';
+  if (!$('status').classList.contains('saved')) $('status').textContent = idleStatus;
+}
+
+$('state-action').addEventListener('click', () => {
+  const state = currentState();
+  if (state === 'not-added') {
+    $('playlists').value = [...splitIds($('playlists').value), tabInfo.list].join('\n');
+    save();
+  } else if (state === 'stale') {
+    chrome.tabs.reload(tabInfo.tab.id);
+    window.close();
+  }
+});
 
 // ── 설정 ───────────────────────────────────────
 
@@ -48,7 +117,7 @@ function flashStatus(text) {
   status.className = 'saved';
   clearTimeout(statusTimer);
   statusTimer = setTimeout(() => {
-    status.textContent = '♡ 대기 중';
+    status.textContent = idleStatus;
     status.className = '';
   }, 1400);
 }
@@ -59,16 +128,9 @@ async function save() {
   $('skipAt').value = skipAt;
   $('playlists').value = playlists.join('\n');
 
-  renderAddCurrent();
-
   await chrome.storage.sync.set({ enabled, skipAt, playlists: playlists.join('\n') });
   flashStatus('♥ 저장 완료!');
-}
-
-// 재생목록 영상을 보면서 열었고 아직 목록에 없을 때만 "지금 보는 재생목록 추가" 를 보여 준다.
-function renderAddCurrent() {
-  const current = ytTab?.list;
-  $('add-current').hidden = !current || splitIds($('playlists').value).includes(current);
+  renderState();
 }
 
 function nudge(delta) {
@@ -82,14 +144,9 @@ $('minus').addEventListener('click', () => nudge(-1));
 $('plus').addEventListener('click', () => nudge(1));
 $('skipAt').addEventListener('change', save);
 $('playlists').addEventListener('change', save);
-$('add-current').addEventListener('click', () => {
-  $('playlists').value = [...splitIds($('playlists').value), ytTab.list].join('\n');
-  save();
-});
 
 // ── 찾기 ───────────────────────────────────────
 
-let ytTab = null;     // 지금 탭이 유튜브면 { tab, list, v }
 let listId = null;    // 검색할 재생목록
 let entries = [];     // 재생목록 영상 + 검색용 정보
 
@@ -101,24 +158,16 @@ function episodeOf(title) {
   return m ? { no: Number(m[1]), label: `${m[1]}화`, name: m[2] || title } : null;
 }
 
-async function findYouTubeTab() {
-  const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
-  if (!tab) return null;
-  try {
-    return { tab, ...(await chrome.tabs.sendMessage(tab.id, { type: 'where' })) };
-  } catch {
-    return null; // 유튜브가 아니거나, 확장 프로그램을 켜기 전에 열린 탭
-  }
-}
-
 async function loadPlaylist(force) {
   const key = `playlist:${listId}`;
   const cached = (await chrome.storage.local.get(key))[key];
   const fresh = cached && Date.now() - cached.savedAt < CACHE_TTL;
-  if (cached && !force && (fresh || !ytTab)) return cached;
+  if (cached && !force && (fresh || !tabInfo.alive)) return cached;
 
-  if (!ytTab) throw new Error('유튜브 탭에서 열면 목록을 받아 올게요.');
-  const res = await chrome.tabs.sendMessage(ytTab.tab.id, { type: 'playlist', list: listId });
+  if (!tabInfo.alive) {
+    throw new Error(tabInfo.youtube ? '유튜브 탭을 새로고침하면 목록을 받아 올게요.' : '유튜브 탭에서 열면 목록을 받아 올게요.');
+  }
+  const res = await chrome.tabs.sendMessage(tabInfo.tab.id, { type: 'playlist', list: listId });
   if (!res?.ok || !res.items.length) throw new Error('목록을 받아 오지 못했어요. ↻ 로 다시 해 보세요.');
 
   const playlist = { title: res.title, items: res.items, savedAt: Date.now() };
@@ -181,7 +230,7 @@ function renderResults() {
     name.textContent = entry.ep?.name ?? entry.title;
 
     button.append(ep, name);
-    if (entry.id === ytTab?.v) {
+    if (entry.id === tabInfo.v) {
       const now = document.createElement('span');
       now.className = 'now';
       now.textContent = '◀ 지금';
@@ -201,7 +250,7 @@ async function openEntry(entry) {
   url.searchParams.set('list', listId);
   url.searchParams.set('index', String(entry.index + 1));
 
-  if (ytTab) await chrome.tabs.update(ytTab.tab.id, { url: url.href });
+  if (tabInfo.youtube) await chrome.tabs.update(tabInfo.tab.id, { url: url.href });
   else await chrome.tabs.create({ url: url.href });
   window.close();
 }
@@ -215,18 +264,18 @@ $('refresh').addEventListener('click', () => { if (listId) refresh(true); });
 // ── 시작 ───────────────────────────────────────
 
 (async () => {
-  const [settings, where] = await Promise.all([chrome.storage.sync.get(DEFAULTS), findYouTubeTab()]);
+  const [settings, info] = await Promise.all([chrome.storage.sync.get(DEFAULTS), inspectTab()]);
 
   enabled = settings.enabled;
   renderEnabled();
   $('skipAt').value = settings.skipAt;
   $('playlists').value = splitIds(settings.playlists).join('\n');
 
-  ytTab = where;
-  renderAddCurrent();
+  tabInfo = info;
+  renderState();
 
   // 지금 보고 있는 재생목록이 먼저, 없으면 설정에 적어 둔 첫 재생목록.
-  listId = where?.list || splitIds(settings.playlists)[0] || null;
+  listId = info.list || splitIds(settings.playlists)[0] || null;
   if (!listId) {
     $('source').textContent = '♪ 재생목록 없음';
     $('note').textContent = '재생목록 영상에서 열거나, 설정에 재생목록을 적어 주세요.';

@@ -102,6 +102,30 @@ button { font: inherit; color: inherit; cursor: pointer; }
 
 .field { margin-bottom: 12px; }
 
+/* 상태 상자 — data-state 에 따라 색과 LED 가 바뀐다 */
+.state {
+  --state-bg: var(--mist);
+  --led: var(--ink-soft);
+  margin-bottom: 14px;
+  padding: 7px 10px 8px;
+  border: 2px solid var(--ink);
+  background: var(--state-bg);
+  box-shadow: 2px 2px 0 var(--ink-soft);
+}
+.state[data-state="active"] { --state-bg: #e2fad8; --led: #3fbf5f; }
+.state[data-state="not-added"], .state[data-state="off"] { --state-bg: var(--butter); --led: #f2b84c; }
+.state[data-state="stale"] { --state-bg: #ffe3f0; --led: var(--pink-deep); }
+
+.state-head { display: flex; align-items: center; gap: 7px; }
+.led { flex: none; width: 10px; height: 10px; border: 2px solid var(--ink); background: var(--led); }
+.state[data-state="active"] .led { animation: led 1s steps(2) infinite; }
+.state p { margin: 3px 0 0; font: 10px/1.5 Galmuri9, system-ui, sans-serif; color: #6b78c9; }
+.state p:empty { display: none; }
+
+.state .state-action { display: block; width: 100%; margin-top: 8px; padding: 3px 8px; background: var(--mint); color: var(--text); }
+.state[data-state="stale"] .state-action { background: var(--pink); }
+.state .state-action:hover { background: var(--paper); }
+
 .label { display: block; margin-bottom: 6px; font-weight: 700; }
 .label::first-letter { color: var(--pink-deep); }
 
@@ -160,9 +184,6 @@ input:focus, textarea:focus, button:focus-visible {
 }
 
 textarea::placeholder { color: var(--ink-soft); font-family: Galmuri11, system-ui, sans-serif; }
-
-.add { display: block; width: 100%; margin-top: 8px; padding: 3px 8px; background: var(--mint); color: var(--text); }
-.add:hover { background: #d2f7c4; }
 
 .hint { margin: 5px 0 0; font: 10px/1.4 Galmuri9, system-ui, sans-serif; color: var(--ink-soft); }
 
@@ -250,4 +271,5 @@ textarea::placeholder { color: var(--ink-soft); font-family: Galmuri11, system-u
 
 @keyframes blink { 50% { opacity: 0; } }
 @keyframes fill { to { width: 100%; } }
+@keyframes led { 50% { background: #b9f0a6; } }
 @keyframes march { 0% { opacity: .35; } 50% { opacity: 1; } 100% { opacity: .35; } }

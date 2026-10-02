@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="size" content="720x400">
+  <link rel="stylesheet" href="guide.css">
+  <link rel="stylesheet" href="usage.css">
+  <style>
+    .states { display: grid; grid-template-columns: 1fr 304px; gap: 18px 24px; align-items: center; }
+    .states h2 { margin: 0 0 4px; font-size: 12px; }
+    .states p { margin: 0; color: #6b78c9; font: 10px/1.5 Galmuri9, sans-serif; }
+    .states iframe { display: block; width: 304px; height: 80px; margin: 0; border: 0; border-radius: 0; box-shadow: none; background: transparent; }
+  </style>
+</head>
+<body>
+  <div class="usage" style="display: block">
+    <h1>지금 탭의 적용 상태</h1>
+    <div class="states">
+      <div>
+        <h2>적용 중</h2>
+        <p>추가해 둔 재생목록을 보고 있어요.<br>정해 둔 초가 지나면 다음 화로 넘어가요. (LED 가 깜빡여요)</p>
+      </div>
+      <iframe src="popup-demo.html?scene=state-active" title=""></iframe>
+
+      <div>
+        <h2>적용 안 됨</h2>
+        <p>아직 추가하지 않은 재생목록이에요.<br>버튼을 누르면 바로 적용돼요.</p>
+      </div>
+      <iframe src="popup-demo.html?scene=state-not-added" title=""></iframe>
+
+      <div>
+        <h2>새로고침이 필요해요</h2>
+        <p>확장 프로그램을 설치 · 업데이트하기 전에 열어 둔 탭이에요.<br>버튼을 누르면 탭을 새로고침해서 바로 동작해요.</p>
+      </div>
+      <iframe src="popup-demo.html?scene=state-stale" title=""></iframe>
+    </div>
+  </div>
+  <script src="usage.js"></script>
+</body>
+</html>

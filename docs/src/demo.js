@@ -10,23 +10,25 @@
     '단풍 구경', '군고구마', '털실 뭉치', '꿀 찾기', '종이비행기', '첫눈',
   ];
   const ITEMS = NAMES.map((name, i) => ({ id: `ep${i + 1}`, title: `[짧은 애니] ${i + 1}화_${name}`, index: i }));
+  const watch = (v) => `https://www.youtube.com/watch?v=${v}&list=${LIST}`;
 
+  // playlists: 설정에 저장돼 있는 재생목록 / url: 팝업을 연 탭 / alive: 그 탭에 콘텐츠 스크립트가 있는지
+  // only: 'state' 면 상태 상자만 보여 준다
   const SCENES = {
     settings: {
-      playlists: '',
-      where: { list: LIST, v: 'ep3' },
-      badges: [['#no', 1, 'after'], ['.unit', 2, 'after'], ['#add-current', 3, 'right']],
+      playlists: '', url: watch('ep3'), alive: true,
+      badges: [['#state', 1, 'right'], ['#no', 2, 'after'], ['.unit', 3, 'after']],
     },
     search: {
-      playlists: LIST,
-      where: { list: LIST, v: 'ep15' },
-      query: '젤리',
+      playlists: LIST, url: watch('ep15'), alive: true, tab: 'search', query: '젤리',
       badges: [['#query', 1, 'right'], ['.result', 2, 'left'], ['.now', 3, 'before'], ['#refresh', 4, 'before']],
     },
+    'state-active': { playlists: LIST, url: watch('ep3'), alive: true, only: 'state' },
+    'state-not-added': { playlists: '', url: watch('ep3'), alive: true, only: 'state' },
+    'state-stale': { playlists: LIST, url: watch('ep3'), alive: false, only: 'state' },
   };
 
-  const sceneName = new URLSearchParams(location.search).get('scene') ?? 'settings';
-  const scene = SCENES[sceneName];
+  const scene = SCENES[new URLSearchParams(location.search).get('scene') ?? 'settings'];
 
   const area = (initial) => {
     const data = { ...initial };
@@ -39,13 +41,15 @@
   window.chrome = {
     storage: { sync: area({ playlists: scene.playlists }), local: area({}) },
     tabs: {
-      async query() { return [{ id: 1 }]; },
+      async query() { return [{ id: 1, url: scene.url }]; },
       async sendMessage(_id, msg) {
-        if (msg.type === 'where') return scene.where;
+        if (!scene.alive) throw new Error('Receiving end does not exist.');
+        if (msg.type === 'ping') return { ok: true };
         return { ok: true, title: '내가 모은 짧은 애니', items: ITEMS };
       },
       async update() {},
       async create() {},
+      async reload() {},
     },
   };
 
@@ -58,6 +62,13 @@
       font: 700 12px/1 Galmuri11, sans-serif; box-shadow: 2px 2px 0 var(--ink);
     }
     *:focus { outline: none !important; }
+
+    body.demo-only-state { padding: 0; background: none; }
+    .demo-only-state :is(.deco, .titlebar, .tabs, .field, .statusbar) { display: none; }
+    .demo-only-state .window { border: 0; box-shadow: none; background: none; }
+    .demo-only-state .body { padding: 0 4px 4px 0; }
+    .demo-only-state .state { margin: 0; }
+    .demo-only-state .led { animation: none; }
   `;
   document.head.append(style);
 
@@ -65,7 +76,8 @@
     await document.fonts.ready;
     await new Promise((r) => setTimeout(r, 200)); // popup.js 의 초기화가 끝나길 기다린다
 
-    document.getElementById(`tab-${sceneName}`).click();
+    if (scene.only === 'state') document.body.classList.add('demo-only-state');
+    document.getElementById(`tab-${scene.tab ?? 'settings'}`).click();
     if (scene.query) {
       const input = document.getElementById('query');
       input.value = scene.query;
@@ -73,7 +85,7 @@
     }
     document.activeElement?.blur();
 
-    for (const [selector, n, side] of scene.badges) {
+    for (const [selector, n, side] of scene.badges ?? []) {
       const rect = document.querySelector(selector).getBoundingClientRect();
       const badge = document.createElement('span');
       badge.className = 'demo-badge';
